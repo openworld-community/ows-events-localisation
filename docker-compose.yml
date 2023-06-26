@@ -1,0 +1,9 @@
+services:
+  qr-app:
+    build: .
+    container_name: parser-api
+    command: python start.py
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app
