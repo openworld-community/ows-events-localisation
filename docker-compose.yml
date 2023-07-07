@@ -16,7 +16,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=root
     ports:
       - "8080:80"
-  qr-app:
+  localisation-app:
     build: .
     container_name: ows-events-localisation
     command: python start.py
