@@ -71,7 +71,8 @@ def create_app():
                 database=DB,
                 port=PORT,
                 user=USER,
-                password=PASSWORD
+                password=PASSWORD,
+                sslmode='disable',
             )
             conn.autocommit = True
         except:
