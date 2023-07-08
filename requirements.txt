@@ -3,3 +3,5 @@ mtranslate
 psycopg2-binary
 python-dotenv
 Flask
+flask-cors
+mtranslate

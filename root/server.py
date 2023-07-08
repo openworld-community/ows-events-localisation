@@ -2,7 +2,8 @@ from path import Path
 
 from flask import Flask, request, abort
 from dotenv import load_dotenv
-
+from flask_cors import CORS
+import urllib.parse
 import os
 from os.path import join, dirname
 
@@ -52,13 +53,14 @@ def is_authorized(token_from_request, token_to_validate):
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
 
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
 
     @app.route("/")
     def hello():
-
+        # TODO: Move creation of connection to a separate function and call it not in every request
         USER = os.getenv("USER")
         PASSWORD = os.getenv("PASSWORD")
         HOST = os.getenv("HOST")
@@ -90,7 +92,8 @@ def create_app():
                 sslmode='disable',
             )
             conn.autocommit = True
-        except:
+        except Exception as e:
+            print(e)
             return "No database connection"
         
         if not text:
@@ -98,6 +101,8 @@ def create_app():
 
         if not target_language:
             return "No target language"
+
+        text = text.replace("'", "--quote--")
         
         cursor = conn.cursor()
         
