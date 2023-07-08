@@ -15,7 +15,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL=root@admin.com
       - PGADMIN_DEFAULT_PASSWORD=root
     ports:
-      - "8080:80"
+      - "8082:80"
   localisation-app:
     build: .
     container_name: ows-events-localisation

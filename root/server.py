@@ -1,6 +1,6 @@
 from path import Path
 
-from flask import Flask, request
+from flask import Flask, request, abort
 from dotenv import load_dotenv
 from flask_cors import CORS
 import urllib.parse
@@ -45,6 +45,12 @@ def cache_text(text, table, language, result, cursor):
         """
     cursor.execute(sql)
 
+def is_authorized(token_from_request, token_to_validate):
+    if token_from_request==token_to_validate:
+        return True
+    return False
+
+
 def create_app():
     app = Flask(__name__)
     CORS(app)
@@ -61,6 +67,15 @@ def create_app():
         PORT = os.getenv("PORT")
         DB = os.getenv("DB")
         TABLE = os.getenv("TABLE")
+        AUTH = os.getenv("AUTH")
+
+        authorization_header = request.headers.get('Authorization')
+
+        if not is_authorized(
+                token_to_validate = AUTH,
+                token_from_request = authorization_header
+            ):
+            abort(403)
 
         args = request.args
 
@@ -73,7 +88,8 @@ def create_app():
                 database=DB,
                 port=PORT,
                 user=USER,
-                password=PASSWORD
+                password=PASSWORD,
+                sslmode='disable',
             )
             conn.autocommit = True
         except Exception as e:
