@@ -6,16 +6,16 @@ services:
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=data
     ports:
-      - "5432:5432"
+      - "5444:5432"
     volumes:
         - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=root@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=root
-    ports:
-      - "8082:80"
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=root@admin.com
+  #     - PGADMIN_DEFAULT_PASSWORD=root
+  #   ports:
+  #     - "8080:80"
   localisation-app:
     build: .
     container_name: ows-events-localisation
@@ -24,3 +24,8 @@ services:
       - 5000:5000
     volumes:
       - .:/app
+
+    environment:
+      - OPENAI_API_KEY=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
+      - FLASK_ENV=development
+      - FLASK_LOG_LEVEL=DEBUG
