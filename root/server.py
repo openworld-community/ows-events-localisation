@@ -62,6 +62,8 @@ def create_app():
     dotenv_path = join(dirname(__file__), ".env")
     load_dotenv(dotenv_path)
 
+    AUTH = os.getenv("AUTH")
+
     @app.route("/")
     def hello():
         # TODO: Move creation of connection to a separate function and call it not in every request
@@ -71,7 +73,6 @@ def create_app():
         PORT = os.getenv("PORT")
         DB = os.getenv("DB")
         TABLE = os.getenv("TABLE")
-        AUTH = os.getenv("AUTH")
 
         authorization_header = request.headers.get("Authorization")
 
@@ -132,6 +133,13 @@ def create_app():
 
     @app.route("/get_category", methods=["POST"])
     def get_category():
+        authorization_header = request.headers.get("Authorization")
+
+        if not is_authorized(
+            token_to_validate=AUTH, token_from_request=authorization_header
+        ):
+            abort(403)
+
         text = request.form.get("text")
         if not text:
             return "No text"
@@ -140,6 +148,13 @@ def create_app():
 
     @app.route("/get_description_for_location", methods=["POST"])
     def get_description_for_location():
+        authorization_header = request.headers.get("Authorization")
+
+        if not is_authorized(
+            token_to_validate=AUTH, token_from_request=authorization_header
+        ):
+            abort(403)
+
         language = request.form.get("language")
         location = request.form.get("location")
 
@@ -152,10 +167,18 @@ def create_app():
         if not location:
             return "No location"
 
-        return locationDescriptionController.get_description(location, language)
+        return locationDescriptionController.get_description(
+            location, language)
 
     @app.route("/get_seo_optimised_text", methods=["POST"])
     def get_seo_optimised_text():
+        authorization_header = request.headers.get("Authorization")
+
+        if not is_authorized(
+            token_to_validate=AUTH, token_from_request=authorization_header
+        ):
+            abort(403)
+
         language = request.form.get("language")
         text = request.form.get("text")
 
