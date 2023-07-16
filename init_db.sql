@@ -9,3 +9,5 @@ CREATE TABLE public.translation_result
 
 ALTER TABLE IF EXISTS public.translation_result
     OWNER to root;
+
+CREATE INDEX idx_text_hash ON translation_result USING hash (md5(source_text));

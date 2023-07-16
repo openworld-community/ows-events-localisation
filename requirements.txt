@@ -4,4 +4,6 @@ psycopg2-binary
 python-dotenv
 Flask
 flask-cors
+flask_wtf
 mtranslate
+flask_sqlalchemy
