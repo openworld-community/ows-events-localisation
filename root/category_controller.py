@@ -42,6 +42,7 @@ class CategoryController:
             )
         except Exception as e:
             print(e)
+            return 'Sorry, something went wrong. Try again later'
         return completion.choices[0].message.content
 
 
