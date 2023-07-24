@@ -6,7 +6,7 @@ services:
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=data
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
         - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
   pgadmin:
@@ -19,10 +19,11 @@ services:
   localisation-app:
     build: .
     container_name: ows-events-localisation
-    command: python start.py
+    command: python /app/start.py
     ports:
       - 5000:5000
     env_file:
       - .env
     volumes:
-      - .:/app
+      - ./root/:/app/root/
+      - ./start.py:/app/start.py
