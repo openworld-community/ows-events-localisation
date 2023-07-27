@@ -1,4 +1,5 @@
 import os
+import sys
 from flask import Flask, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -17,14 +18,15 @@ def search_text(text_to_translate, table, language, db):
         f"""
             SELECT {table}.translated_text
             FROM {table}
-            WHERE source_text='{text}'
+            WHERE source_text='{text_to_translate}'
             AND target_language='{language}'
             AND translated_text IS NOT NULL;
             """
     )
-    result = db.session.execute(sql, {"text": text_to_translate, "language": language})
+    result = db.session.execute(sql)
+
     column_names = result.keys()
-    data = [dict(zip(column_names, row)) for row in result]
+    data = [dict(zip(column_names, row)) for row in result.fetchall()]
     return data
 
 
