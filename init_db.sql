@@ -11,3 +11,17 @@ ALTER TABLE IF EXISTS public.translation_result
     OWNER to root;
 
 CREATE INDEX idx_text_hash ON translation_result USING hash (md5(source_text));
+
+
+CREATE TABLE public.category_cache
+(
+    source_text text NOT NULL,
+    category_text text,
+    create_date date NOT NULL DEFAULT CURRENT_DATE,
+    last_access_date date NOT NULL DEFAULT CURRENT_DATE
+);
+
+ALTER TABLE IF EXISTS public.category_cache
+    OWNER to root;
+
+CREATE INDEX idx_category_text_hash ON category_cache USING hash (md5(source_text));
