@@ -62,6 +62,56 @@ def cache_text(text_to_translate, table, language, result, db):
     db.session.commit()
 
 
+########################
+########################
+########################
+
+def search_category(text_to_category, db):
+    sql = text(
+        f"""
+            SELECT category_cache.category_text
+            FROM category_cache
+            WHERE source_text='{text_to_category}'
+            AND category_text IS NOT NULL;
+            """
+    )
+    result = db.session.execute(sql)
+
+    column_names = result.keys()
+    data = [dict(zip(column_names, row)) for row in result.fetchall()]
+    print(data, file=sys.stderr)
+    return data
+
+
+def last_access_register_category_cache(text_to_category, db):
+    sql = text(
+        f"""
+            UPDATE category_cache
+                SET last_access_date=CURRENT_DATE
+            WHERE source_text=:text
+        """
+    )
+    db.session.execute(sql, {"text": text_to_category})
+    db.session.commit()
+
+
+def cache_category_text(text_to_category, result, db):
+    sql = text(
+        f"""
+            INSERT INTO category_cache
+            (source_text,
+            category_text)
+            VALUES
+            (:text,
+            :result);
+        """
+    )
+    db.session.execute(
+        sql, {"text": text_to_category, "result": result}
+    )
+    db.session.commit()
+
+
 def is_authorized(token_from_request, token_to_validate):
     # two validations in case both tokens are None for some reason
     return token_from_request and token_from_request == token_to_validate
@@ -137,7 +187,7 @@ def create_app():
         authorization_header = request.headers.get("Authorization")
 
         if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+                token_to_validate=AUTH, token_from_request=authorization_header
         ):
             abort(403)
 
@@ -145,7 +195,27 @@ def create_app():
         if not text:
             return "No text"
 
-        return categoryController.get_category(text)
+        search_result = search_category(
+            text_to_category=text,
+            db=db,
+        )[0]
+
+        if search_result:
+            result = search_result
+            last_access_register_category_cache(
+                text_to_category=text,
+                db=db,
+            )
+        else:
+            result = categoryController.get_category(text)
+
+            cache_category_text(
+                text_to_category=text,
+                result=result,
+                db=db,
+            )
+
+        return result
 
     @app.route("/get_description_for_location", methods=["POST"])
     def get_description_for_location():
