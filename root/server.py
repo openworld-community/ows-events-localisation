@@ -8,6 +8,7 @@ from flask_cors import CORS
 from sqlalchemy import text
 from mtranslate import translate
 
+from root.category_controller import categories
 from root.category_controller import categoryController
 from root.location_description_controller import locationDescriptionController
 from root.seo_optimisation_controller import seoOptimisationController
@@ -79,7 +80,6 @@ def search_category(text_to_category, db):
 
     column_names = result.keys()
     data = [dict(zip(column_names, row)) for row in result.fetchall()]
-    print(data, file=sys.stderr)
     return data
 
 
@@ -141,7 +141,7 @@ def create_app():
         authorization_header = request.headers.get("Authorization")
 
         if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+                token_to_validate=AUTH, token_from_request=authorization_header
         ):
             abort(403)
         args = request.args
@@ -217,12 +217,23 @@ def create_app():
 
         return result
 
+    @app.route("/get_all_categories", methods=["GET"])
+    def get_all_categories():
+        authorization_header = request.headers.get("Authorization")
+
+        if not is_authorized(
+                token_to_validate=AUTH, token_from_request=authorization_header
+        ):
+            abort(403)
+
+        return categories
+
     @app.route("/get_description_for_location", methods=["POST"])
     def get_description_for_location():
         authorization_header = request.headers.get("Authorization")
 
         if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+                token_to_validate=AUTH, token_from_request=authorization_header
         ):
             abort(403)
 
@@ -245,7 +256,7 @@ def create_app():
         authorization_header = request.headers.get("Authorization")
 
         if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+                token_to_validate=AUTH, token_from_request=authorization_header
         ):
             abort(403)
 
