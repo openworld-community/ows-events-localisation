@@ -28,3 +28,4 @@ services:
     volumes:
       - ./root/:/app/root/
       - ./start.py:/app/start.py
+      - ./store/:/app/store/

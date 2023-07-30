@@ -1,4 +1,5 @@
 import os
+import os.path
 import sys
 from flask import Flask, request, abort
 from flask_sqlalchemy import SQLAlchemy
@@ -12,6 +13,11 @@ from root.category_controller import categories
 from root.category_controller import categoryController
 from root.location_description_controller import locationDescriptionController
 from root.seo_optimisation_controller import seoOptimisationController
+from path import Path
+from root.main_qr import gen_qr_code
+import urllib.parse
+import urllib.request
+from flask import send_file
 
 
 def search_text(text_to_translate, table, language, db):
@@ -117,6 +123,22 @@ def is_authorized(token_from_request, token_to_validate):
     return token_from_request and token_from_request == token_to_validate
 
 
+NO_CACHE = False
+
+STORE_PATH = Path("/app/store")
+
+
+def download(url, path):
+    opener = urllib.request.URLopener()
+    opener.addheader('User-Agent', 'whatever')
+    opener.retrieve(url, path)
+
+
+def remove_file(path):
+    if os.path.isfile(path):
+        os.remove(path)
+
+
 def create_app():
     app = Flask(__name__)
     CORS(app)
@@ -130,14 +152,18 @@ def create_app():
     DB = os.getenv("DB")
     AUTH = os.getenv("AUTH")
 
+    os.makedirs(STORE_PATH, exist_ok=True)
+    os.makedirs(STORE_PATH / "source", exist_ok=True)
+    os.makedirs(STORE_PATH / "result", exist_ok=True)
+
     app.config[
         "SQLALCHEMY_DATABASE_URI"
     ] = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}?sslmode=disable"
     db = SQLAlchemy(app)
 
     @app.route("/")
-    def hello():
-        TABLE = os.getenv("TABLE")
+    @app.route("/translated_text")
+    def translated_text():
         authorization_header = request.headers.get("Authorization")
 
         if not is_authorized(
@@ -157,7 +183,7 @@ def create_app():
 
         search_result = search_text(
             text_to_translate=text_to_translate,
-            table=TABLE,
+            table="translation_result",
             language=target_language,
             db=db,
         )
@@ -166,7 +192,7 @@ def create_app():
             result = search_result[0]["translated_text"]
             last_access_register(
                 text_to_translate=text_to_translate,
-                table=TABLE,
+                table="translation_result",
                 language=target_language,
                 db=db,
             )
@@ -174,7 +200,7 @@ def create_app():
             result = translate(text_to_translate, target_language)
             cache_text(
                 text_to_translate=text_to_translate,
-                table=TABLE,
+                table="translation_result",
                 language=target_language,
                 result=result,
                 db=db,
@@ -273,6 +299,36 @@ def create_app():
             return "No text"
 
         return seoOptimisationController.get_text(text, language)
+
+    @app.route("/get_qr")
+    def get_qr():
+        args = request.args
+
+        url = args.get('url')
+        original = args.get('original')
+
+        if not url:
+            return "No url"
+
+        if not original:
+            return "No original"
+
+        qr_name = urllib.parse.quote_plus(
+            original) + urllib.parse.quote_plus(url) + ".png"
+        qr_path = Path().joinpath("store", 'result', qr_name)
+
+        if NO_CACHE or not os.path.isfile(qr_path):
+            path_to_source_image = STORE_PATH / 'source' / \
+                                   urllib.parse.quote_plus(original)
+            path_to_save = STORE_PATH / 'result' / qr_name
+
+            download(original, path_to_source_image)
+
+            gen_qr_code(url, path_to_source_image, path_to_save)
+
+            remove_file(path_to_source_image)
+
+        return send_file('../store/result/' + qr_name)
 
     return app
 
