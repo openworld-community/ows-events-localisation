@@ -1,127 +1,21 @@
 import os
-import os.path
-import sys
-from flask import Flask, request, abort
+import urllib
+
+from flask import Flask, request, abort, send_file
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from flask_cors import CORS
 
-from sqlalchemy import text
 from mtranslate import translate
+from path import Path
 
 from root.category_controller import categories
 from root.category_controller import categoryController
 from root.location_description_controller import locationDescriptionController
-from root.seo_optimisation_controller import seoOptimisationController
-from path import Path
 from root.main_qr import gen_qr_code
-import urllib.parse
-import urllib.request
-from flask import send_file
-
-
-def search_text(text_to_translate, table, language, db):
-    sql = text(
-        f"""
-            SELECT {table}.translated_text
-            FROM {table}
-            WHERE source_text='{text_to_translate}'
-            AND target_language='{language}'
-            AND translated_text IS NOT NULL;
-            """
-    )
-    result = db.session.execute(sql)
-
-    column_names = result.keys()
-    data = [dict(zip(column_names, row)) for row in result.fetchall()]
-    return data
-
-
-def last_access_register(text_to_translate, language, table, db):
-    sql = text(
-        f"""
-            UPDATE {table}
-                SET last_access_date=CURRENT_DATE
-            WHERE source_text=:text
-            AND target_language=:language;
-        """
-    )
-    db.session.execute(sql, {"text": text_to_translate, "language": language})
-    db.session.commit()
-
-
-def cache_text(text_to_translate, table, language, result, db):
-    sql = text(
-        f"""
-            INSERT INTO {table}
-            (source_text,
-            target_language,
-            translated_text)
-            VALUES
-            (:text,
-            :language,
-            :result);
-        """
-    )
-    db.session.execute(
-        sql, {"text": text_to_translate, "result": result, "language": language}
-    )
-    db.session.commit()
-
-
-########################
-########################
-########################
-
-def search_category(text_to_category, db):
-    sql = text(
-        f"""
-            SELECT category_cache.category_text
-            FROM category_cache
-            WHERE source_text='{text_to_category}'
-            AND category_text IS NOT NULL;
-            """
-    )
-    result = db.session.execute(sql)
-
-    column_names = result.keys()
-    data = [dict(zip(column_names, row)) for row in result.fetchall()]
-    return data
-
-
-def last_access_register_category_cache(text_to_category, db):
-    sql = text(
-        f"""
-            UPDATE category_cache
-                SET last_access_date=CURRENT_DATE
-            WHERE source_text=:text
-        """
-    )
-    db.session.execute(sql, {"text": text_to_category})
-    db.session.commit()
-
-
-def cache_category_text(text_to_category, result, db):
-    sql = text(
-        f"""
-            INSERT INTO category_cache
-            (source_text,
-            category_text)
-            VALUES
-            (:text,
-            :result);
-        """
-    )
-    db.session.execute(
-        sql, {"text": text_to_category, "result": result}
-    )
-    db.session.commit()
-
-
-def is_authorized(token_from_request, token_to_validate):
-    # two validations in case both tokens are None for some reason
-    return token_from_request and token_from_request == token_to_validate
-
+from root.seo_optimisation_controller import seoOptimisationController
+from root.category_query import search_category, last_access_register_category_cache, cache_category_text
+from root.translate_query import search_text, last_access_register, cache_text
 
 NO_CACHE = False
 
@@ -139,6 +33,16 @@ def remove_file(path):
         os.remove(path)
 
 
+os.makedirs(STORE_PATH, exist_ok=True)
+os.makedirs(STORE_PATH / "source", exist_ok=True)
+os.makedirs(STORE_PATH / "result", exist_ok=True)
+
+
+def is_authorized(token_from_request, token_to_validate):
+    # two validations in case both tokens are None for some reason
+    return token_from_request and token_from_request == token_to_validate
+
+
 def create_app():
     app = Flask(__name__)
     CORS(app)
@@ -151,10 +55,6 @@ def create_app():
     PORT = os.getenv("PORT")
     DB = os.getenv("DB")
     AUTH = os.getenv("AUTH")
-
-    os.makedirs(STORE_PATH, exist_ok=True)
-    os.makedirs(STORE_PATH / "source", exist_ok=True)
-    os.makedirs(STORE_PATH / "result", exist_ok=True)
 
     app.config[
         "SQLALCHEMY_DATABASE_URI"
