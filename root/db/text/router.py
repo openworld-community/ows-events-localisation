@@ -8,6 +8,7 @@ from root.database import db
 
 from flask import Blueprint
 
+from root.db.text.seo_optimisation_controller import seoOptimisationController
 from root.translate_query import search_text, last_access_register, cache_text
 from mtranslate import translate
 
@@ -61,3 +62,28 @@ def translated_text():
         )
 
     return result
+
+
+@text_router.route("/get_seo_optimised_text", methods=["POST"])
+def get_seo_optimised_text():
+    AUTH = os.getenv("AUTH")
+    authorization_header = request.headers.get("Authorization")
+
+    if not is_authorized(
+            token_to_validate=AUTH, token_from_request=authorization_header
+    ):
+        abort(403)
+
+    language = request.form.get("language")
+    text = request.form.get("text")
+
+    if not language:
+        return "No language"
+
+    if language not in ["en", "ru"]:
+        return "Wrong language, only en and ru are supported"
+
+    if not text:
+        return "No text"
+
+    return seoOptimisationController.get_text(text, language)
