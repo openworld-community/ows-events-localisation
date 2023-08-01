@@ -32,3 +32,5 @@ class SeoOptimisationController:
 
 
 seoOptimisationController = SeoOptimisationController()
+
+

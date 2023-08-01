@@ -1,5 +1,6 @@
 from sqlalchemy import text
 
+
 def search_category(text_to_category, db):
     sql = text(
         f"""
