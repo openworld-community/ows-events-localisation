@@ -20,6 +20,9 @@ categories = [
     "THEATRE",
     "TOUR",
     "OTHER",
+    "STAND UP",
+    "FOR KIDS",
+    "PET FRIENDLY",
 ]
 
 
