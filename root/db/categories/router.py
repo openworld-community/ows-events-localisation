@@ -5,12 +5,10 @@ from flask import request, abort
 from root.auth import is_authorized
 from root.db.categories.category_controller import categories, categoryController
 
-
 from root.db.categories.category_query import search_category, cache_category_text, last_access_register_category_cache
 from root.database import db
 
 from flask import Blueprint
-
 
 category_router = Blueprint("Category", __name__)
 
@@ -36,7 +34,7 @@ def get_category():
     first_item = search_result[0] if len(search_result) else None
 
     if first_item:
-        result = first_item
+        result = first_item['category_text']
         last_access_register_category_cache(
             text_to_category=text,
             db=db,
