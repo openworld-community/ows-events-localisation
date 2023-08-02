@@ -1,23 +1,25 @@
 from sqlalchemy import text
 
+from root.database import engine
+from root.session import session
 
-def search_category(text_to_category, db):
+
+def search_category(text_to_category):
     sql = text(
         f"""
             SELECT category_cache.category_text
             FROM category_cache
             WHERE source_text='{text_to_category}'
             AND category_text IS NOT NULL;
-            """
+           """
     )
-    result = db.session.execute(sql)
-
+    result = engine.execute(sql)
     column_names = result.keys()
     data = [dict(zip(column_names, row)) for row in result.fetchall()]
     return data
 
 
-def last_access_register_category_cache(text_to_category, db):
+def last_access_register_category_cache(text_to_category):
     sql = text(
         f"""
             UPDATE category_cache
@@ -25,11 +27,13 @@ def last_access_register_category_cache(text_to_category, db):
             WHERE source_text=:text
         """
     )
-    db.session.execute(sql, {"text": text_to_category})
-    db.session.commit()
+    # Используем объект Session для выполнения запроса и коммита транзакции
+    session.execute(sql, {"text": text_to_category})
+
+    session.commit()  # commit the transaction
 
 
-def cache_category_text(text_to_category, result, db):
+def cache_category_text(text_to_category, result):
     sql = text(
         f"""
             INSERT INTO category_cache
@@ -40,7 +44,8 @@ def cache_category_text(text_to_category, result, db):
             :result);
         """
     )
-    db.session.execute(
+    # Используем объект Session для выполнения запроса и коммита транзакции
+    session.execute(
         sql, {"text": text_to_category, "result": result}
     )
-    db.session.commit()
+    session.commit()  # commit the transaction
