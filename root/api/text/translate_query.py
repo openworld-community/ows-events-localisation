@@ -1,24 +1,25 @@
 from sqlalchemy import text
+from root.database import engine
+from root.session import session
 
 
-def search_text(text_to_translate, table, language, db):
-    sql = text(
-        f"""
+def search_text(text_to_translate, table, language):
+    sql = text(f"""
             SELECT {table}.translated_text
             FROM {table}
             WHERE source_text='{text_to_translate}'
             AND target_language='{language}'
             AND translated_text IS NOT NULL;
             """
-    )
-    result = db.session.execute(sql)
+               )
 
+    result = engine.execute(sql)
     column_names = result.keys()
     data = [dict(zip(column_names, row)) for row in result.fetchall()]
     return data
 
 
-def last_access_register(text_to_translate, language, table, db):
+def last_access_register(text_to_translate, language, table):
     sql = text(
         f"""
             UPDATE {table}
@@ -27,11 +28,14 @@ def last_access_register(text_to_translate, language, table, db):
             AND target_language=:language;
         """
     )
-    db.session.execute(sql, {"text": text_to_translate, "language": language})
-    db.session.commit()
+
+    # Используем объект Session для выполнения запроса и коммита транзакции
+    session.execute(sql, {"text": text_to_translate, "language": language})
+
+    session.commit()  # commit the transaction
 
 
-def cache_text(text_to_translate, table, language, result, db):
+def cache_text(text_to_translate, table, language, result):
     sql = text(
         f"""
             INSERT INTO {table}
@@ -44,7 +48,9 @@ def cache_text(text_to_translate, table, language, result, db):
             :result);
         """
     )
-    db.session.execute(
+
+    # Используем объект Session для выполнения запроса и коммита транзакции
+    session.execute(
         sql, {"text": text_to_translate, "result": result, "language": language}
     )
-    db.session.commit()
+    session.commit()  # commit the transaction
