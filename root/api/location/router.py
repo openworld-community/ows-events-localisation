@@ -3,7 +3,7 @@ import os
 from flask import request, abort
 
 from root.auth import is_authorized
-from root.db.location.location_description_controller import locationDescriptionController
+from root.api.location.location_description_controller import locationDescriptionController
 
 from flask import Blueprint
 
