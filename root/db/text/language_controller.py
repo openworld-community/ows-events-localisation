@@ -8,13 +8,18 @@ if os.getenv("OPENAI_API_KEY") is None:
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+languages = [
+    "RUSSIAN",
+    "ENGLISH",
+    "SERBIAN",
+]
+
 
 class LanguageController:
     def get_language(self, text):
         try:
-            print(text, file=sys.stderr)
             system_prompt = f"You have to answer in one word what language the text is written in, this text: {text}" \
-                            f"""Return only in format ["language"]"""
+                            f"""Return only in format ["language1", "language2"]: {', '.join(languages)}"""
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
