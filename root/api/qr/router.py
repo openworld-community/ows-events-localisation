@@ -1,5 +1,4 @@
 import os
-import sys
 import urllib
 
 from flask import request, send_file
@@ -7,7 +6,7 @@ from path import Path
 
 from flask import Blueprint
 
-from root.db.qr.main_qr import gen_qr_code
+from root.api.qr.main_qr import gen_qr_code
 
 NO_CACHE = False
 

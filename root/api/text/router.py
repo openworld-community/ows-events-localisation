@@ -4,15 +4,12 @@ import sys
 from flask import request, abort
 
 from root.auth import is_authorized
-
-from root.database import db
-
 from flask import Blueprint
 
-from root.db.text.seo_optimisation_controller import seoOptimisationController
-from root.translate_query import search_text, last_access_register, cache_text
+from root.api.text.seo_optimisation_controller import seoOptimisationController
+from root.api.text.translate_query import search_text, last_access_register, cache_text
 from mtranslate import translate
-from root.db.text.language_controller import languageController
+from root.api.text.language_controller import languageController
 
 text_router = Blueprint("Text", __name__)
 
@@ -42,7 +39,6 @@ def translated_text():
         text_to_translate=text_to_translate,
         table="translation_result",
         language=target_language,
-        db=db,
     )
 
     if search_result:
@@ -51,7 +47,6 @@ def translated_text():
             text_to_translate=text_to_translate,
             table="translation_result",
             language=target_language,
-            db=db,
         )
     else:
         result = translate(text_to_translate, target_language)
@@ -60,7 +55,6 @@ def translated_text():
             table="translation_result",
             language=target_language,
             result=result,
-            db=db,
         )
 
     return result

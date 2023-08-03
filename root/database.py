@@ -1,20 +1,8 @@
-import os
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 
-from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
+from root.config import settings
 
-from root.create_app import app
+engine = create_engine(settings.DATABASE_URL)
 
-load_dotenv(".env")
-
-USER = os.getenv("USER")
-PASSWORD = os.getenv("PASSWORD")
-HOST = os.getenv("HOST")
-PORT = os.getenv("PORT")
-DB = os.getenv("DB")
-AUTH = os.getenv("AUTH")
-
-app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}?sslmode=disable"
-db = SQLAlchemy(app)
+Base = declarative_base()

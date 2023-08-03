@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Text, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
-
-Base = declarative_base()
+from root.database import Base
 
 
 class Category(Base):
