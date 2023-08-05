@@ -5,7 +5,7 @@ from flask import request, abort
 from root.auth import is_authorized
 from root.api.categories.category_controller import categories, categoryController
 from root.api.categories.category_query import search_category, cache_category_text, last_access_register_category_cache
-
+from root.api.categories.schemas import SCategory
 from flask import Blueprint
 
 
@@ -13,7 +13,7 @@ category_router = Blueprint("Category", __name__)
 
 
 @category_router.route("/get_category", methods=["POST"])
-def get_category():
+def get_category() -> list[SCategory]:
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
 
@@ -47,7 +47,7 @@ def get_category():
 
 
 @category_router.route("/get_all_categories", methods=["GET"])
-def get_all_categories():
+def get_all_categories() -> list[SCategory]:
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
 
