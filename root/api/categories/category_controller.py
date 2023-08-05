@@ -24,7 +24,7 @@ categories = [
 
 
 class CategoryController:
-    def get_category(self, text):
+    def get_category(self, text: str):
         try:
             system_prompt = f"You are can take category of text from presented: {', '.join(categories)}"
             completion = openai.ChatCompletion.create(
