@@ -4,7 +4,6 @@ import openai
 if os.getenv("OPENAI_API_KEY") is None:
     raise Exception("OPENAI_API_KEY environment variable is not set")
 
-
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 categories = [
@@ -26,7 +25,8 @@ categories = [
 class CategoryController:
     def get_category(self, text):
         try:
-            system_prompt = f"You are can take category of text from presented: {', '.join(categories)}"
+            system_prompt = f"You are can take categories of text from presented, " \
+                            f"""Return only in format ["category1", "category2", "category3"]: {', '.join(categories)}"""
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
