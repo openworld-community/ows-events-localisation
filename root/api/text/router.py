@@ -1,4 +1,5 @@
 import os
+import sys
 
 from flask import request, abort
 
@@ -8,6 +9,7 @@ from flask import Blueprint
 from root.api.text.seo_optimisation_controller import seoOptimisationController
 from root.api.text.translate_query import search_text, last_access_register, cache_text
 from mtranslate import translate
+from root.api.text.language_controller import languageController
 
 text_router = Blueprint("Text", __name__)
 
@@ -81,3 +83,22 @@ def get_seo_optimised_text():
         return "No text"
 
     return seoOptimisationController.get_text(text, language)
+
+
+@text_router.route("/get_language", methods=["POST"])
+def get_language():
+    AUTH = os.getenv("AUTH")
+    authorization_header = request.headers.get("Authorization")
+
+    if not is_authorized(
+            token_to_validate=AUTH, token_from_request=authorization_header
+    ):
+        abort(403)
+
+    text = request.form.get("text")
+
+    if not text:
+        return "No text"
+
+    return languageController.get_language(text)
+
