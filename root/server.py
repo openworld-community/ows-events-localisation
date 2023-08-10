@@ -1,8 +1,8 @@
 from root.api.categories.router import category_router
+from root.api.censorship.router import censorship_router
 from root.api.location.router import location_router
 from root.api.qr.router import qr_router
 from root.api.text.router import text_router
-from root.api.censorship.router import censorship_router
 from root.create_app import app
 
 

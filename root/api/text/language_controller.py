@@ -1,7 +1,9 @@
 import os
-import sys
 
 import openai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 if os.getenv("OPENAI_API_KEY") is None:
     raise Exception("OPENAI_API_KEY environment variable is not set")
@@ -18,8 +20,10 @@ languages = [
 class LanguageController:
     def get_language(self, text):
         try:
-            system_prompt = f"You have to answer in one word what language the text is written in, this text: {text}" \
-                            f"""Return only in format ["language1", "language2"]: {', '.join(languages)}"""
+            system_prompt = (
+                f"You have to answer in one word what language the text is written in, this text: {text}"
+                f"""Return only in format ["language1", "language2"]: {', '.join(languages)}"""
+            )
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
@@ -35,7 +39,7 @@ class LanguageController:
             )
         except Exception as e:
             print(e)
-            return 'Sorry, something went wrong. Try again later'
+            return "Sorry, something went wrong. Try again later"
         return completion.choices[0].message.content
 
 

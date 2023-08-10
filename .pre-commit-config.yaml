@@ -13,6 +13,7 @@ repos:
     rev: v1.4.1
     hooks:
     -   id: mypy
+        args: [--check-untyped-defs, --ignore-missing-imports]
 
   - repo: https://github.com/pycqa/flake8
     rev: 6.0.0

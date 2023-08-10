@@ -7,8 +7,11 @@ check:
 start:
 	poetry run python start.py
 
-docker:
+docker-up:
 	docker-compose up -d --build
+
+docker-stop:
+	docker-compose stop
 
 lint:
 	poetry run flake8
@@ -26,4 +29,3 @@ commit:
 	poetry run pre-commit run -a
 
 setup: env install
-
