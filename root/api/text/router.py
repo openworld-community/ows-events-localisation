@@ -8,13 +8,14 @@ from flask import Blueprint
 from root.api.text.seo_optimisation_controller import seoOptimisationController
 from root.api.text.translate_query import search_text, last_access_register, cache_text
 from mtranslate import translate
+from root.api.text.schemas import STranslate
 
 text_router = Blueprint("Text", __name__)
 
 
 @text_router.route("/")
 @text_router.route("/translated_text")
-def translated_text():
+def translated_text() -> list[STranslate]:
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
 
@@ -59,7 +60,7 @@ def translated_text():
 
 
 @text_router.route("/get_seo_optimised_text", methods=["POST"])
-def get_seo_optimised_text():
+def get_seo_optimised_text() -> list[STranslate]:
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
 

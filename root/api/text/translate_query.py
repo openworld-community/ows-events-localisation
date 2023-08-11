@@ -3,7 +3,7 @@ from root.database import engine
 from root.session import session
 
 
-def search_text(text_to_translate, table, language):
+def search_text(text_to_translate: str, table: str, language: str):
     sql = text(f"""
             SELECT {table}.translated_text
             FROM {table}
@@ -11,7 +11,7 @@ def search_text(text_to_translate, table, language):
             AND target_language='{language}'
             AND translated_text IS NOT NULL;
             """
-               )
+            )
 
     result = engine.execute(sql)
     column_names = result.keys()
@@ -19,7 +19,7 @@ def search_text(text_to_translate, table, language):
     return data
 
 
-def last_access_register(text_to_translate, language, table):
+def last_access_register(text_to_translate: str, language: str, table: str):
     sql = text(
         f"""
             UPDATE {table}
@@ -35,7 +35,7 @@ def last_access_register(text_to_translate, language, table):
     session.commit()  # commit the transaction
 
 
-def cache_text(text_to_translate, table, language, result):
+def cache_text(text_to_translate: str, table: str, language: str, result: str):
     sql = text(
         f"""
             INSERT INTO {table}

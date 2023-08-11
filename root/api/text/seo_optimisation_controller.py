@@ -5,7 +5,6 @@ from root.semantic_core import semantic_core
 if os.getenv("OPENAI_API_KEY") is None:
     raise Exception("OPENAI_API_KEY environment variable is not set")
 
-
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
@@ -32,5 +31,3 @@ class SeoOptimisationController:
 
 
 seoOptimisationController = SeoOptimisationController()
-
-
