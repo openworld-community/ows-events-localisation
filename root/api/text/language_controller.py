@@ -1,4 +1,6 @@
 import os
+import sys
+
 import openai
 
 if os.getenv("OPENAI_API_KEY") is None:
@@ -6,27 +8,18 @@ if os.getenv("OPENAI_API_KEY") is None:
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-categories = [
-    "CONCERT",
-    "EXHIBITION",
-    "FESTIVAL",
-    "LECTURE",
-    "MASTER_CLASS",
-    "MEETING",
-    "PARTY",
-    "PERFORMANCE",
-    "SPORT",
-    "THEATRE",
-    "TOUR",
-    "OTHER",
+languages = [
+    "RUSSIAN",
+    "ENGLISH",
+    "SERBIAN",
 ]
 
 
-class CategoryController:
-    def get_category(self, text):
+class LanguageController:
+    def get_language(self, text):
         try:
-            system_prompt = f"You are can take categories of text from presented, " \
-                            f"""Return only in format ["category1", "category2", "category3"]: {', '.join(categories)}"""
+            system_prompt = f"You have to answer in one word what language the text is written in, this text: {text}" \
+                            f"""Return only in format ["language1", "language2"]: {', '.join(languages)}"""
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
@@ -36,7 +29,7 @@ class CategoryController:
                     },
                     {
                         "role": "user",
-                        "content": f"Tell me category of text: {text}",
+                        "content": f"Write me a text in your language: {text}",
                     },
                 ],
             )
@@ -46,4 +39,4 @@ class CategoryController:
         return completion.choices[0].message.content
 
 
-categoryController = CategoryController()
+languageController = LanguageController()
