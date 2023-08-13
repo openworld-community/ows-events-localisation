@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     DB: str
     AUTH: str
 
+    SECRET_KEY: str
+
     @property
     def DATABASE_URL(self):
         return f"postgresql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DB}?sslmode=disable"

@@ -1,23 +1,25 @@
 import os
 import sys
 
-from flask import abort, jsonify, request
-from sqlalchemy.exc import IntegrityError
-from root.api.users.auth import get_password_hash
+from flask import Blueprint
+from flask import abort
+from flask import request, jsonify, make_response
+from werkzeug.security import generate_password_hash
+
 from root.api.users.user_model import User
 from root.auth import is_authorized
-from flask import Blueprint
+from root.config import settings
 from root.session import session
+import jwt
 
 users_router = Blueprint("Users", __name__)
 
 
-@users_router.route('/create_user', methods=['POST'])
-def create_user():
+@users_router.route('/signup', methods=['POST'])
+def signup_user():
+    """ Апи для sign up (регистрации пользователя), в json передается username и password_hash"""
 
-    """ Апи по созданию пользователя, передавать в Postman нужно username и password_hash
-        password_hash - это обычный пароль, а хешируется он в hashed_password """
-
+    """Доступ к данной ручке доступен только по мастер ключу AUTH"""
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
     if not is_authorized(
@@ -25,29 +27,61 @@ def create_user():
     ):
         abort(403)
 
-    username = request.form.get("username")
-    password_hash = request.form.get("password_hash")
+    data = request.get_json()
 
-    if not username:
-        return "No username"
-    if not password_hash:
-        return "No password_hash"
+    if not data or not data.get('username') or not data.get('password_hash'):
+        return make_response(jsonify({"message": "Убедитесь, что вы передали поля username или password_hash"}))
 
-    hashed_password = get_password_hash(password_hash)
-    new_user = User(username=username, password_hash=hashed_password)
+    hashed_password = generate_password_hash(data['password_hash'])
+    user = session.query(User).filter_by(username=data['username']).first()
 
-    try:
+    if not user:
+        new_user = User(username=data['username'], password_hash=hashed_password)
         session.add(new_user)
         session.commit()
-        return jsonify({"message": "User created successfully"})
-    except IntegrityError:
-        session.rollback()
-        return jsonify({"message": "Username already exists"}), 400
+
+        token = jwt.encode({"user_id": new_user.user_id}, settings.SECRET_KEY, "HS256")
+
+        # Включаем токен в заголовок
+        response_data = {'message': 'Пользователь успешно создан', "token": token}
+        response = jsonify(response_data)
+        response.headers['token'] = token
+        return response
+    else:
+        return make_response(jsonify({"message": "Такой пользователь уже существует!"}), 409)
+
+
+@users_router.route('/get_new_token', methods=['POST'])
+def get_new_token():
+    """Апи для получения нового токена"""
+
+    """Доступ к данной ручке доступен только по мастер ключу AUTH"""
+    AUTH = os.getenv("AUTH")
+    authorization_header = request.headers.get("Authorization")
+    if not is_authorized(
+            token_to_validate=AUTH, token_from_request=authorization_header
+    ):
+        abort(403)
+
+    auth_header = request.headers.get('token')
+    if not auth_header:
+        return make_response('Токен отсутствует', 401)
+
+    token = auth_header
+
+    decoded_token = jwt.decode(token, settings.SECRET_KEY, "HS256")
+
+    user_id = decoded_token['user_id']
+
+    # Создание нового токена
+    new_token = jwt.encode({"user_id": user_id}, settings.SECRET_KEY, "HS256")
+    response_data = {'message': 'Новый токен получен', 'token': new_token}
+
+    return jsonify(response_data), 200
 
 
 @users_router.route('/users', methods=['GET'])
 def get_all_users():
-
     """ Апи по получению всех существующих пользователей """
 
     AUTH = os.getenv("AUTH")
@@ -72,9 +106,16 @@ def get_all_users():
 
 @users_router.route('/delete_user/<int:user_id>', methods=["DELETE"])
 def delete_user(user_id: int):
-
     """ Апи по удалению пользователя, нужно заметить что используется метод DELETE
         Для корректной работы нужно передать id пользователя в адрес запроса """
+
+    """Доступ к данной ручке доступен только по мастер ключу AUTH"""
+    AUTH = os.getenv("AUTH")
+    authorization_header = request.headers.get("Authorization")
+    if not is_authorized(
+            token_to_validate=AUTH, token_from_request=authorization_header
+    ):
+        abort(403)
 
     deleted_user = session.query(User).filter_by(user_id=user_id).first()
     if deleted_user:
