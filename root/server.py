@@ -14,6 +14,7 @@ def create_app():
     app.register_blueprint(text_router)
     app.register_blueprint(users_router)
     app.register_blueprint(censorship_router)
+
     return app
 
 

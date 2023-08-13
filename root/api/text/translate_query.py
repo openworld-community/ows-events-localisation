@@ -18,8 +18,6 @@ def search_text(text_to_translate: str, table: str, language: str):
     data = [dict(zip(column_names, row)) for row in result.fetchall()]
     return data
 
-
-
 def last_access_register(text_to_translate: str, language: str, table: str):
     sql = text(
         f"""

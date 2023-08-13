@@ -10,6 +10,7 @@ from root.api.categories.category_query import (
     last_access_register_category_cache,
     search_category,
 )
+from root.api.categories.schemas import SCategory
 from root.auth import is_authorized
 
 category_router = Blueprint("Category", __name__)

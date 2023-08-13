@@ -20,6 +20,7 @@ def signup_user():
     """ Апи для sign up (регистрации пользователя), в json передается username и password_hash"""
 
     """Доступ к данной ручке доступен только по мастер ключу AUTH"""
+
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
     if not is_authorized(
@@ -82,6 +83,7 @@ def get_new_token():
 
 @users_router.route('/users', methods=['GET'])
 def get_all_users():
+
     """ Апи по получению всех существующих пользователей """
 
     AUTH = os.getenv("AUTH")
