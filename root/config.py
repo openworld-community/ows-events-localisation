@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     PORT: str
     DB: str
     AUTH: str
+    OPENAI_API_KEY: str
 
     SECRET_KEY: str
 
@@ -20,4 +21,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-

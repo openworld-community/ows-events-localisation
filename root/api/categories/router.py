@@ -1,13 +1,16 @@
 import os
 
-from flask import request, abort
+from flask import Blueprint, abort, request
 
-from root.auth import is_authorized
 from root.api.categories.category_controller import categories, categoryController
-from root.api.categories.category_query import search_category, cache_category_text, last_access_register_category_cache
 from root.api.categories.schemas import SCategory
 from flask import Blueprint
-
+from root.api.categories.category_query import (
+    cache_category_text,
+    last_access_register_category_cache,
+    search_category,
+)
+from root.auth import is_authorized
 
 category_router = Blueprint("Category", __name__)
 
@@ -18,7 +21,7 @@ def get_category() -> list[SCategory]:
     authorization_header = request.headers.get("Authorization")
 
     if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+        token_to_validate=AUTH, token_from_request=authorization_header
     ):
         abort(403)
 
@@ -32,7 +35,7 @@ def get_category() -> list[SCategory]:
     first_item = search_result[0] if len(search_result) else None
 
     if first_item:
-        result = first_item
+        result = first_item["category_text"]
         last_access_register_category_cache(
             text_to_category=text,
         )
@@ -52,7 +55,7 @@ def get_all_categories() -> list[SCategory]:
     authorization_header = request.headers.get("Authorization")
 
     if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+        token_to_validate=AUTH, token_from_request=authorization_header
     ):
         abort(403)
 

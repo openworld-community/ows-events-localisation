@@ -1,21 +1,21 @@
 import os
-import urllib
+from urllib import parse as url_parse
+from urllib import request as url_request
 
-from flask import request, send_file
+from flask import Blueprint, request, send_file
 from path import Path
-
-from flask import Blueprint
 
 from root.api.qr.main_qr import gen_qr_code
 
 NO_CACHE = False
 
 STORE_PATH = Path("/app/store")
+print(STORE_PATH)
 
 
 def download(url, path):
-    opener = urllib.request.URLopener()
-    opener.addheader('User-Agent', 'whatever')
+    opener = url_request.URLopener()
+    opener.addheader(("User-Agent", "whatever"))
     opener.retrieve(url, path)
 
 
@@ -35,8 +35,8 @@ qr_router = Blueprint("QR", __name__)
 def get_qr():
     args = request.args
 
-    url = args.get('url')
-    original = args.get('original')
+    url = args.get("url")
+    original = args.get("original")
 
     if not url:
         return "No url"
@@ -44,14 +44,12 @@ def get_qr():
     if not original:
         return "No original"
 
-    qr_name = urllib.parse.quote_plus(
-        original) + urllib.parse.quote_plus(url) + ".png"
-    qr_path = Path().joinpath("store", 'result', qr_name)
+    qr_name = url_parse.quote_plus(original) + url_parse.quote_plus(url) + ".png"
+    qr_path = Path().joinpath("store", "result", qr_name)
 
     if NO_CACHE or not os.path.isfile(qr_path):
-        path_to_source_image = STORE_PATH / 'source' / \
-                               urllib.parse.quote_plus(original)
-        path_to_save = STORE_PATH / 'result' / qr_name
+        path_to_source_image = STORE_PATH / "source" / url_parse.quote_plus(original)
+        path_to_save = STORE_PATH / "result" / qr_name
 
         download(original, path_to_source_image)
 
@@ -59,4 +57,4 @@ def get_qr():
 
         remove_file(path_to_source_image)
 
-    return send_file('../store/result/' + qr_name)
+    return send_file("../store/result/" + qr_name)
