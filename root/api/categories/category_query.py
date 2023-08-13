@@ -4,7 +4,7 @@ from root.database import engine
 from root.session import session
 
 
-def search_category(text_to_category):
+def search_category(text_to_category: str):
     sql = text(
         f"""
             SELECT category_cache.category_text
@@ -21,7 +21,7 @@ def search_category(text_to_category):
     return data
 
 
-def last_access_register_category_cache(text_to_category):
+def last_access_register_category_cache(text_to_category: str):
     sql = text(
         f"""
             UPDATE category_cache
@@ -35,7 +35,7 @@ def last_access_register_category_cache(text_to_category):
     session.commit()  # commit the transaction
 
 
-def cache_category_text(text_to_category, result):
+def cache_category_text(text_to_category: str, result: str):
     sql = text(
         f"""
             INSERT INTO category_cache

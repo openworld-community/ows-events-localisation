@@ -10,7 +10,6 @@ load_dotenv()
 if os.getenv("OPENAI_API_KEY") is None:
     raise Exception("OPENAI_API_KEY environment variable is not set")
 
-
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 

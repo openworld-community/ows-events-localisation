@@ -5,11 +5,11 @@ from dotenv import load_dotenv
 
 from root.semantic_core import semantic_core
 
+
 load_dotenv()
 
 if os.getenv("OPENAI_API_KEY") is None:
     raise Exception("OPENAI_API_KEY environment variable is not set")
-
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 

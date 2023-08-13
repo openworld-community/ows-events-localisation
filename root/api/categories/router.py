@@ -8,13 +8,14 @@ from root.api.categories.category_query import (
     last_access_register_category_cache,
     search_category,
 )
+from root.api.categories.schemas import SCategory
 from root.auth import is_authorized
 
 category_router = Blueprint("Category", __name__)
 
 
 @category_router.route("/get_category", methods=["POST"])
-def get_category():
+def get_category() -> list[SCategory]:
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
 
@@ -48,7 +49,7 @@ def get_category():
 
 
 @category_router.route("/get_all_categories", methods=["GET"])
-def get_all_categories():
+def get_all_categories() -> list[SCategory]:
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
 

@@ -25,3 +25,18 @@ ALTER TABLE IF EXISTS public.category_cache
     OWNER to root;
 
 CREATE INDEX idx_category_text_hash ON category_cache USING hash (md5(source_text));
+
+
+CREATE TABLE public.users
+(
+    user_id serial PRIMARY KEY,
+    username text NOT NULL UNIQUE,
+    password_hash text NOT NULL,
+    create_date date NOT NULL DEFAULT CURRENT_DATE,
+    last_access_date date NOT NULL DEFAULT CURRENT_DATE
+);
+
+ALTER TABLE IF EXISTS public.users
+    OWNER to root;
+
+CREATE INDEX idx_username_hash ON users USING hash (md5(username));
