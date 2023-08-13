@@ -1,16 +1,13 @@
 import os
 import sys
 
-from flask import request, abort
-
-from root.auth import is_authorized
-from flask import Blueprint
-
-from root.api.text.seo_optimisation_controller import seoOptimisationController
-from root.api.text.translate_query import search_text, last_access_register, cache_text
+from flask import Blueprint, abort, request
 from mtranslate import translate
 from root.api.text.schemas import STranslate
 from root.api.text.language_controller import languageController
+from root.api.text.seo_optimisation_controller import seoOptimisationController
+from root.api.text.translate_query import cache_text, last_access_register, search_text
+from root.auth import is_authorized
 
 text_router = Blueprint("Text", __name__)
 
@@ -22,13 +19,19 @@ def translated_text() -> list[STranslate]:
     authorization_header = request.headers.get("Authorization")
 
     if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+        token_to_validate=AUTH, token_from_request=authorization_header
     ):
         abort(403)
     args = request.args
 
     text_to_translate = args.get("text")
     target_language = args.get("tl")
+    print(
+        "-------------------------------------",
+        target_language,
+        text_to_translate,
+        file=sys.stderr,
+    )
 
     if not text_to_translate:
         return "No text"
@@ -67,7 +70,7 @@ def get_seo_optimised_text() -> list[STranslate]:
     authorization_header = request.headers.get("Authorization")
 
     if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+        token_to_validate=AUTH, token_from_request=authorization_header
     ):
         abort(403)
 
@@ -92,7 +95,7 @@ def get_language():
     authorization_header = request.headers.get("Authorization")
 
     if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+        token_to_validate=AUTH, token_from_request=authorization_header
     ):
         abort(403)
 
@@ -102,4 +105,3 @@ def get_language():
         return "No text"
 
     return languageController.get_language(text)
-

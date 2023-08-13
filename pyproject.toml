@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "ows-events-localisation"
+version = "0.1.0"
+description = "APIs for Afisha"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "root"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^2.3.2"
+flask-cors = "^4.0.0"
+flask-wtf = "^1.1.1"
+path = "16.3.0"
+mtranslate = "^1.8"
+psycopg2-binary = "^2.9.7"
+python-dotenv = "^1.0.0"
+openai = "^0.27.8"
+pillow = "9.0.1"
+pyzbar = "0.1.8"
+qrcode = "7.3.1"
+pydantic = "^2.1.1"
+pydantic-settings = "^2.0.2"
+sqlalchemy = "1.4.40"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.3.3"
+
+[tool.black]
+line_lenght = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+
+[tool.flake8]
+max-line-length = 120
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
