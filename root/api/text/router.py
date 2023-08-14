@@ -26,12 +26,6 @@ def translated_text() -> list[STranslate]:
 
     text_to_translate = args.get("text")
     target_language = args.get("tl")
-    print(
-        "-------------------------------------",
-        target_language,
-        text_to_translate,
-        file=sys.stderr,
-    )
 
     if not text_to_translate:
         return "No text"

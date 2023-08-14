@@ -1,4 +1,4 @@
-FROM python:3.11-slim-buster
+FROM python:3.11
 
 RUN apt-get update
 RUN apt-get install gcc zbar-tools libhdf5-dev libjpeg-dev zlib1g-dev -y
