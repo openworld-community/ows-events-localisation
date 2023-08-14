@@ -11,7 +11,7 @@ class EventOnPoster(dict):
     durationInSeconds: int = (
         1000  # а это вообще зачем? можно использовать формат timedelta
     )
-    location: dict[str, str] = field(init=False, repr=True, default=dict())
+    location: dict[str, str] = field(init=False, repr=True, default_factory=dict)
     country: str = field(init=True, repr=False, default="Limonia")
     city: str = field(init=True, repr=False, default="default_city")
 
@@ -21,7 +21,7 @@ class EventOnPoster(dict):
     price: int = 100  # может тут лучше float с органичением после запятой?
     # может быть добавить переменную currency для мультивалютности?
 
-    timezone: dict[str, str] = field(init=False, repr=True, default=dict())
+    timezone: dict[str, str] = field(init=False, repr=True, default_factory=dict)
     timezoneName: str = field(init=True, repr=False, default="time_zone")
     timezoneOffset: str = field(
         init=True, repr=False, default="timezone_offset"
@@ -39,21 +39,21 @@ class EventOnPoster(dict):
 
 @dataclass
 class PostEventPayload(dict):
-    event: dict = field(init=False, repr=True, default=dict())
+    event: dict = field(init=False, repr=True, default_factory=dict)
 
     title: str = field(init=True, repr=False, default="Title")
     description: str = field(init=True, repr=False, default="Description")
     date: str = field(init=True, repr=False, default="date_time")
     durationInSeconds: int = field(init=True, repr=False, default=1000)
 
-    location: dict[str, str] = field(init=False, repr=False, default=dict())
+    location: dict[str, str] = field(init=False, repr=False, default_factory=dict)
     country: str = field(init=True, repr=False, default="Limonia")
     city: str = field(init=True, repr=False, default="default_city")
 
     image: str = field(init=True, repr=False, default="this_is_image_url")
     price: int = field(init=True, repr=False, default=100)
 
-    timezone: dict[str, str] = field(init=False, repr=False, default=dict())
+    timezone: dict[str, str] = field(init=False, repr=False, default_factory=dict)
     timezoneName: str = field(init=True, repr=False, default="time_zone")
     timezoneOffset: str = field(init=True, repr=False, default="timezone_offset")
 
