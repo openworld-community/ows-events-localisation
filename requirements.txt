@@ -12,5 +12,5 @@ qrcode==7.3.1
 pydantic
 pydantic-settings
 sqlalchemy==1.4.40
-bcrypt==4.0.1
-passlib==1.7.4
+flask-jwt-extended
+PyJWT==2.8.0

@@ -4,8 +4,9 @@ from root.database import engine
 from root.session import session
 
 
-def search_text(text_to_translate: str, table: str, language: str):
-    sql = text(f"""
+def search_text(text_to_translate, table, language):
+    sql = text(
+        f""""
             SELECT {table}.translated_text
             FROM {table}
             WHERE source_text='{text_to_translate}'
@@ -17,6 +18,7 @@ def search_text(text_to_translate: str, table: str, language: str):
     column_names = result.keys()
     data = [dict(zip(column_names, row)) for row in result.fetchall()]
     return data
+
 
 def last_access_register(text_to_translate: str, language: str, table: str):
     sql = text(
