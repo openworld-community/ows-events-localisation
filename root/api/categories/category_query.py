@@ -15,7 +15,9 @@ def search_category(text_to_category: str):
     )
     result = engine.execute(sql)
     column_names = result.keys()
-    data = [dict(zip(column_names, row)) for row in result.fetchall()]
+    data = [
+        dict(zip(column_names, row)) for row in result.fetchall()
+    ]  # вернуть первую категорию
     return data
 
 
@@ -24,11 +26,11 @@ def last_access_register_category_cache(text_to_category: str):
         f"""
             UPDATE category_cache
                 SET last_access_date=CURRENT_DATE
-            WHERE source_text=:text
+            WHERE source_text='{text_to_category}'
         """
     )
     # Используем объект Session для выполнения запроса и коммита транзакции
-    session.execute(sql, {"text": text_to_category})
+    session.execute(sql)
 
     session.commit()  # commit the transaction
 
@@ -40,12 +42,12 @@ def cache_category_text(text_to_category: str, result: str):
             (source_text,
             category_text)
             VALUES
-            (:text,
-            :result);
+            (
+            '{text_to_category}',
+            '{result}',
+            );
         """
     )
     # Используем объект Session для выполнения запроса и коммита транзакции
-    session.execute(
-        sql, {"text": text_to_category, "result": result}
-    )
+    session.execute(sql)
     session.commit()  # commit the transaction

@@ -1,11 +1,11 @@
 import os
 
-from flask import request, abort
+from flask import Blueprint, abort, request
 
+from root.api.location.location_description_controller import (
+    locationDescriptionController,
+)
 from root.auth import is_authorized
-from root.api.location.location_description_controller import locationDescriptionController
-
-from flask import Blueprint
 
 location_router = Blueprint("Location", __name__)
 
@@ -16,7 +16,7 @@ def get_description_for_location():
     authorization_header = request.headers.get("Authorization")
 
     if not is_authorized(
-            token_to_validate=AUTH, token_from_request=authorization_header
+        token_to_validate=AUTH, token_from_request=authorization_header
     ):
         abort(403)
 
