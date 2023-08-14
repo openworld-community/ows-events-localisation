@@ -75,8 +75,9 @@ class EventsValidator:
         return result
 
     def prevalidation_event(
-        self, event: PostEventPayload.event  # type: ignore
+        self, event: PostEventPayload  # type: ignore
     ) -> EventValidatorResult:
+        event = event.event
         if event is None:  # Двойная проверка нам точно нужна?
             result = EventValidatorResult(
                 isValid=False, errors=[EventValidatorErrorTypes.EVENT_IS_NOT_DEFINED]
