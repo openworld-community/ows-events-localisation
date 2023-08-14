@@ -4,7 +4,6 @@ import sys
 from flask import Blueprint, abort, request
 from mtranslate import translate
 from root.api.text.schemas import STranslate
-
 from root.api.text.language_controller import languageController
 from root.api.text.seo_optimisation_controller import seoOptimisationController
 from root.api.text.translate_query import cache_text, last_access_register, search_text

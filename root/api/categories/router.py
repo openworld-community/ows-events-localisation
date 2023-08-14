@@ -2,10 +2,13 @@ import os
 
 from flask import request, abort
 
-from root.auth import is_authorized
 from root.api.categories.category_controller import categories, categoryController
-from root.api.categories.category_query import search_category, cache_category_text, last_access_register_category_cache
-
+from root.api.categories.category_query import (
+    cache_category_text,
+    last_access_register_category_cache,
+    search_category,
+)
+from root.auth import is_authorized
 from flask import Blueprint
 
 

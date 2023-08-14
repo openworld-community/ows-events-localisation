@@ -33,7 +33,3 @@ def token_required(f):
 
     return decorator
 
-
-
-
-
