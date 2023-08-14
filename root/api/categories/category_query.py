@@ -5,13 +5,14 @@ from root.session import session
 
 
 def search_category(text_to_category: str):
+    checked_text = text_to_category.replace("'", "''")
     sql = text(
         f"""
-            SELECT category_cache.category_text
-            FROM category_cache
-            WHERE source_text='{text_to_category}'
-            AND category_text IS NOT NULL;
-           """
+                SELECT category_cache.category_text
+                FROM category_cache
+                WHERE source_text='{checked_text}'
+                AND category_text IS NOT NULL;
+               """
     )
     result = engine.execute(sql)
     column_names = result.keys()

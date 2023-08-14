@@ -5,13 +5,15 @@ from root.session import session
 
 
 def search_text(text_to_translate: str, table: str, language: str):
-    sql = text(f"""
-            SELECT {table}.translated_text
-            FROM {table}
-            WHERE source_text='{text_to_translate}'
-            AND target_language='{language}'
-            AND translated_text IS NOT NULL;
-            """
+    checked_text = text_to_translate.replace("'", "''")
+    sql = text(
+        f"""
+                SELECT {table}.translated_text
+                FROM {table}
+                WHERE source_text='{checked_text}'
+                AND target_language='{language}'
+                AND translated_text IS NOT NULL;
+                """
     )
     result = engine.execute(sql)
     column_names = result.keys()
