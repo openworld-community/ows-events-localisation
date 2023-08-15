@@ -15,7 +15,9 @@ def search_text(text_to_translate, table, language):
         """
     )
 
-    result = engine.execute(query, text_to_translate=text_to_translate, language=language)
+    result = engine.execute(
+        query, text_to_translate=text_to_translate, language=language
+    )
     column_names = result.keys()
     data = [dict(zip(column_names, row)) for row in result.fetchall()]
     return data
@@ -38,7 +40,6 @@ def last_access_register(text_to_translate: str, language: str, table: str):
 
 
 def cache_text(text_to_translate: str, table: str, language: str, result: str):
-
     query = text(
         f"""
         INSERT INTO {table}
@@ -52,8 +53,9 @@ def cache_text(text_to_translate: str, table: str, language: str, result: str):
         """
     )
 
-    session.execute(query, {"text": text_to_translate, "language": language, "result": result})
+    session.execute(
+        query, {"text": text_to_translate, "language": language, "result": result}
+    )
     session.commit()
 
     session.close()
-
