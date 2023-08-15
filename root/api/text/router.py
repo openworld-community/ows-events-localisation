@@ -1,10 +1,9 @@
 import os
-import sys
 
 from flask import Blueprint, abort, request
 from mtranslate import translate
-from root.api.text.schemas import STranslate
-from root.api.text.language_controller import languageController
+
+from root.api.text.language_recognizer import languageRecognizer
 from root.api.text.seo_optimisation_controller import seoOptimisationController
 from root.api.text.translate_query import cache_text, last_access_register, search_text
 from root.auth import is_authorized
@@ -14,7 +13,7 @@ text_router = Blueprint("Text", __name__)
 
 @text_router.route("/")
 @text_router.route("/translated_text")
-def translated_text() -> list[STranslate]:
+def translated_text() -> str:
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
 
@@ -26,12 +25,6 @@ def translated_text() -> list[STranslate]:
 
     text_to_translate = args.get("text")
     target_language = args.get("tl")
-    print(
-        "-------------------------------------",
-        target_language,
-        text_to_translate,
-        file=sys.stderr,
-    )
 
     if not text_to_translate:
         return "No text"
@@ -60,12 +53,11 @@ def translated_text() -> list[STranslate]:
             language=target_language,
             result=result,
         )
-
     return result
 
 
 @text_router.route("/get_seo_optimised_text", methods=["POST"])
-def get_seo_optimised_text() -> list[STranslate]:
+def get_seo_optimised_text() -> str:
     AUTH = os.getenv("AUTH")
     authorization_header = request.headers.get("Authorization")
 
@@ -104,4 +96,4 @@ def get_language():
     if not text:
         return "No text"
 
-    return languageController.get_language(text)
+    return languageRecognizer.recognize_language(text)
