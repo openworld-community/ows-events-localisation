@@ -1,26 +1,26 @@
 from functools import wraps
 
-from flask import request, jsonify
 import jwt
+from flask import jsonify, request
 
 from root.config import settings
 
 
 def token_required(f):
-
     """Декоратор для проверки аутентифицирован ли пользователь
-        Служит для защиты определенных ресурсов
+    Служит для защиты определенных ресурсов
 
-        Можно накинуть на апи этот декоратор и если пользователь незалогиненый
-        то выпадет ошибка
+    Можно накинуть на апи этот декоратор и если пользователь незалогиненый
+    то выпадет ошибка
 
         """
 
+
     @wraps(f)
     def decorator():
-        token = request.headers.get('token')
+        token = request.headers.get("token")
         if not token:
-            return jsonify({'message': 'Токен отсутствует'}), 401
+            return jsonify({"message": "Токен отсутствует"}), 401
         try:
             data = jwt.decode(token, settings.SECRET_KEY, "HS256")
             current_user = data['user_id'] # на данный момент не используется
@@ -28,5 +28,5 @@ def token_required(f):
             return jsonify({'message': 'Токен недействителен'}), 403
         return f()
 
-    return decorator
 
+    return decorator

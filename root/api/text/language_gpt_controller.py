@@ -1,4 +1,5 @@
 import os
+import sys
 
 import openai
 from dotenv import load_dotenv
@@ -37,6 +38,7 @@ class LanguageController:
                     },
                 ],
             )
+            print("------------------", completion, file=sys.stderr)
         except Exception as e:
             print(e)
             return "Sorry, something went wrong. Try again later"
