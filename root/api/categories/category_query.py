@@ -5,7 +5,6 @@ from root.session import session
 
 
 def search_category(text_to_category: str):
-
     query = text(
         f"""
         SELECT category_cache.category_text
@@ -22,7 +21,6 @@ def search_category(text_to_category: str):
 
 
 def last_access_register_category_cache(text_to_category: str):
-
     query = text(
         f"""
         UPDATE category_cache
@@ -38,7 +36,6 @@ def last_access_register_category_cache(text_to_category: str):
 
 
 def cache_category_text(text_to_category: str, result: str):
-
     sql = text(
         """
         INSERT INTO category_cache
