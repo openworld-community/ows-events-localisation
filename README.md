@@ -1,8 +1,10 @@
 # ows-events-qr
 
 # Environments
-Create .env file and copy all environments from [.env.template](.env.template)
-
+Use this command to copy environments from [.env.template](.env.template) in .env file
+```bash
+make env
+ ```
 (Environments are configured by default to work with [docker-compose.yml](docker-compose.yml). Change them for your needs)
 
 ## How to start with docker
@@ -25,12 +27,12 @@ docker-compose up
 
     Run this command:
     ```bash
-    poetry install
+    make install
     ```
 
 2. Run project
     ```bash
-    python start.py
+    make start
     ```
 
 3. First request
