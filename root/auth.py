@@ -1,3 +1,20 @@
-def is_authorized(token_from_request, token_to_validate):
-    # two validations in case both tokens are None for some reason
-    return token_from_request and token_from_request == token_to_validate
+import os
+from functools import wraps
+
+from dotenv import load_dotenv
+from flask import abort, request
+
+load_dotenv()
+
+
+def check_authorization(route):
+    @wraps(route)
+    def wrapper(*args, **kwargs):
+        token_to_validate = os.getenv("AUTH")
+        token_from_request = request.headers.get("Authorization")
+
+        if not token_from_request or token_from_request != token_to_validate:
+            return abort(403)
+        return route(*args, **kwargs)
+
+    return wrapper
