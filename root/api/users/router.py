@@ -1,11 +1,9 @@
-import os
-
 import jwt
-from flask import Blueprint, abort, jsonify, make_response, request
+from flask import Blueprint, jsonify, make_response, request
 from werkzeug.security import generate_password_hash
 
 from root.api.users.user_model import User
-from root.auth import is_authorized
+from root.auth import check_authorization
 from root.config import settings
 from root.session import session
 
@@ -13,17 +11,11 @@ users_router = Blueprint("Users", __name__)
 
 
 @users_router.route("/signup", methods=["POST"])
+@check_authorization
 def signup_user():
     """Апи для sign up (регистрации пользователя), в json передается username и password_hash"""
 
     """Доступ к данной ручке доступен только по мастер ключу AUTH"""
-
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
 
     data = request.get_json()
 
@@ -58,16 +50,11 @@ def signup_user():
 
 
 @users_router.route("/get_new_token", methods=["POST"])
+@check_authorization
 def get_new_token():
     """Апи для получения нового токена"""
 
     """Доступ к данной ручке доступен только по мастер ключу AUTH"""
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
 
     auth_header = request.headers.get("token")
     if not auth_header:
@@ -87,15 +74,9 @@ def get_new_token():
 
 
 @users_router.route("/users", methods=["GET"])
+@check_authorization
 def get_all_users():
     """Апи по получению всех существующих пользователей"""
-
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
 
     users = session.query(User).all()
 
@@ -108,17 +89,12 @@ def get_all_users():
 
 
 @users_router.route("/delete_user/<int:user_id>", methods=["DELETE"])
+@check_authorization
 def delete_user(user_id: int):
     """Апи по удалению пользователя, нужно заметить что используется метод DELETE
     Для корректной работы нужно передать id пользователя в адрес запроса"""
 
     """Доступ к данной ручке доступен только по мастер ключу AUTH"""
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
 
     deleted_user = session.query(User).filter_by(user_id=user_id).first()
     if deleted_user:

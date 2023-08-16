@@ -1,26 +1,18 @@
-import os
-
-from flask import Blueprint, abort, request
+from flask import Blueprint, request
 from mtranslate import translate
 
 from root.api.text.language_recognizer import languageRecognizer
 from root.api.text.seo_optimisation_controller import seoOptimisationController
 from root.api.text.translate_query import cache_text, last_access_register, search_text
-from root.auth import is_authorized
+from root.auth import check_authorization
 
 text_router = Blueprint("Text", __name__)
 
 
 @text_router.route("/")
 @text_router.route("/translated_text")
+@check_authorization
 def translated_text() -> str:
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
     args = request.args
 
     text_to_translate = args.get("text")
@@ -57,15 +49,8 @@ def translated_text() -> str:
 
 
 @text_router.route("/get_seo_optimised_text", methods=["POST"])
+@check_authorization
 def get_seo_optimised_text() -> str:
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
-
     language = request.form.get("language")
     text = request.form.get("text")
 
@@ -82,15 +67,8 @@ def get_seo_optimised_text() -> str:
 
 
 @text_router.route("/get_language", methods=["POST"])
+@check_authorization
 def get_language():
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
-
     text = request.form.get("text")
 
     if not text:

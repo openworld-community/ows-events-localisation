@@ -1,8 +1,6 @@
-import os
+from flask import Blueprint, request
 
-from flask import Blueprint, abort, request
-
-from root.auth import is_authorized
+from root.auth import check_authorization
 
 from .category_controller import categories, categoryController
 from .category_query import (
@@ -15,15 +13,8 @@ category_router = Blueprint("Category", __name__)
 
 
 @category_router.route("/get_category", methods=["POST"])
+@check_authorization
 def get_category():
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
-
     text = request.form.get("text")
     if not text:
         return "No text"
@@ -49,13 +40,6 @@ def get_category():
 
 
 @category_router.route("/get_all_categories", methods=["GET"])
+@check_authorization
 def get_all_categories():
-    AUTH = os.getenv("AUTH")
-    authorization_header = request.headers.get("Authorization")
-
-    if not is_authorized(
-        token_to_validate=AUTH, token_from_request=authorization_header
-    ):
-        abort(403)
-
     return categories
