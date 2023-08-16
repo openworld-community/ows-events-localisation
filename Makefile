@@ -29,3 +29,8 @@ commit:
 	poetry run pre-commit run -a
 
 setup: env install
+
+test-coverage:
+	poetry run coverage run --source='./tests' -m unittest
+	poetry run coverage xml
+	poetry run coverage report

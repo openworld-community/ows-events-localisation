@@ -1,7 +1,10 @@
 import os
 from functools import wraps
 
+from dotenv import load_dotenv
 from flask import abort, request
+
+load_dotenv()
 
 
 def check_authorization(route):
